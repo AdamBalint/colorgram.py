@@ -6,6 +6,7 @@ from __future__ import division
 import array
 from collections import namedtuple
 from PIL import Image
+import numpy as np
 
 import sys
 if sys.version_info[0] <= 2:
@@ -21,7 +22,7 @@ class Color(object):
     def __init__(self, r, g, b, proportion):
         self.rgb = Rgb(r, g, b)
         self.proportion = proportion
-    
+
     def __repr__(self):
         return "<colorgram.py Color: {}, {}%>".format(
             str(self.rgb), str(self.proportion * 100))
@@ -35,10 +36,14 @@ class Color(object):
             return self._hsl
 
 def extract(f, number_of_colors):
-    image = Image.open(f)
+    if type(f) == str:
+        image = Image.open(f)
+    elif type(f) == np.ndarray:
+        image = Image.fromarray(f)
+
     if image.mode not in ('RGB', 'RGBA', 'RGBa'):
         image = image.convert('RGB')
-    
+
     samples = sample(image)
     used = pick_used(samples)
     used.sort(key=lambda x: x[0], reverse=True)
@@ -52,7 +57,7 @@ def sample(image):
 
     samples = array.array(ARRAY_DATATYPE, (0 for _ in range(cubes)))
     width, height = image.size
-    
+
     pixels = image.load()
     for y in range(height):
         for x in range(width):
@@ -149,7 +154,7 @@ def hsl(r, g, b):
             s = diff * 255 // (510 - most - least)
         else:
             s = diff * 255 // (most + least)
-        
+
         if most == r:
             h = (g - b) * 255 // diff + (1530 if g < b else 0)
         elif most == g:
@@ -157,7 +162,7 @@ def hsl(r, g, b):
         else:
             h = (r - g) * 255 // diff + 1020
         h //= 6
-    
+
     return h, s, l
 
 # Useful snippet for testing values:

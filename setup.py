@@ -3,10 +3,11 @@
 
 from setuptools import setup
 
-VERSION = '1.1.0'
+VERSION = '1.1.1'
 
 REQUIREMENTS = [
     "pillow >= 3.3.1"
+    "numpy==1.15.1"
 ]
 
 with open("readme.rst", 'r') as f:
